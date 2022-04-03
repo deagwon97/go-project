@@ -1,0 +1,13 @@
+*.env*
+!.env-example
+!.env.db-example
+
+*/db-data/*
+!db-data
+build
+main
+yarn.lock
+node_modules
+
+__debug_bin
+.DS_Store

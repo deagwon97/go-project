@@ -1,0 +1,852 @@
+definitions:
+  dblayer.PermissionAnswer:
+    properties:
+      is_allowed:
+        type: boolean
+      objects:
+        items:
+          type: string
+        type: array
+    type: object
+  dblayer.PermissionAssignmentData:
+    properties:
+      permission_id:
+        type: integer
+      role_id:
+        type: integer
+    type: object
+  dblayer.PermissionData:
+    properties:
+      action:
+        type: string
+      name:
+        type: string
+      object:
+        type: string
+      service_name:
+        type: string
+    type: object
+  dblayer.PermissionSet:
+    properties:
+      actions:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      objects:
+        items:
+          type: string
+        type: array
+    type: object
+  dblayer.PermissionSetData:
+    properties:
+      permission_sets:
+        items:
+          $ref: '#/definitions/dblayer.PermissionSet'
+        type: array
+      service_name:
+        type: string
+    type: object
+  dblayer.PermissionsPage:
+    properties:
+      count:
+        type: integer
+      next:
+        type: string
+      previous:
+        type: string
+      results:
+        items:
+          $ref: '#/definitions/models.Permission'
+        type: array
+    type: object
+  dblayer.RoleData:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  dblayer.RolesPage:
+    properties:
+      count:
+        type: integer
+      next:
+        type: string
+      previous:
+        type: string
+      results:
+        items:
+          $ref: '#/definitions/models.Role'
+        type: array
+    type: object
+  dblayer.SubjectAssignmentData:
+    properties:
+      role_id:
+        type: integer
+      subject_id:
+        type: integer
+    type: object
+  dblayer.SubjectStatus:
+    properties:
+      is_allowed:
+        type: boolean
+      subject_id:
+        type: integer
+    type: object
+  dblayer.SubjectsStatusPage:
+    properties:
+      count:
+        type: integer
+      next:
+        type: string
+      previous:
+        type: string
+      results:
+        items:
+          $ref: '#/definitions/dblayer.SubjectStatus'
+        type: array
+    type: object
+  dblayer.UserIDName:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.AddUserData:
+    properties:
+      email:
+        type: string
+      login_id:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - login_id
+    - password
+    type: object
+  models.Content:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      summary:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+      user:
+        type: integer
+    type: object
+  models.ContentData:
+    properties:
+      content:
+        type: string
+      summary:
+        type: string
+      title:
+        type: string
+    type: object
+  models.ContentItem:
+    properties:
+      id:
+        type: integer
+      summary:
+        type: string
+      title:
+        type: string
+    type: object
+  models.ContentList:
+    properties:
+      count:
+        type: integer
+      next:
+        type: string
+      previous:
+        type: string
+      results:
+        items:
+          $ref: '#/definitions/models.ContentItem'
+        type: array
+    type: object
+  models.LoginRequest:
+    properties:
+      login_id:
+        type: string
+      password:
+        type: string
+    required:
+    - login_id
+    - password
+    type: object
+  models.LoginResult:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.Permission:
+    properties:
+      action:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      object:
+        type: string
+      service_name:
+        type: string
+    type: object
+  models.PermissionAssignment:
+    properties:
+      id:
+        type: integer
+      permission_id:
+        type: integer
+      role_id:
+        type: integer
+    type: object
+  models.Role:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.SubjectAssignment:
+    properties:
+      id:
+        type: integer
+      role_id:
+        type: integer
+      subject_id:
+        type: integer
+    type: object
+  rest.PermissionQuery:
+    properties:
+      action:
+        type: string
+      name:
+        type: string
+      service_name:
+        type: string
+      subject_id:
+        type: integer
+    type: object
+  rest.UserIDList:
+    properties:
+      id_list:
+        items:
+          type: integer
+        type: array
+    type: object
+  rest.accessToken:
+    properties:
+      access_token:
+        type: string
+    type: object
+  rest.refreshToken:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is a RBAC server.
+  title: RBAC GO API
+  version: "1.0"
+paths:
+  /account:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 회원가입 정보
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddUserData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LoginResult'
+      summary: User 생성
+      tags:
+      - Account
+  /account/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 로그인 정보
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: access token & refresh token
+          schema:
+            $ref: '#/definitions/models.LoginResult'
+      summary: 로그인
+      tags:
+      - Account
+  /account/name/list:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/rest.UserIDList'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dblayer.UserIDName'
+      summary: 사용자 이름 목록 조회
+      tags:
+      - Account
+  /account/renew:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Refresh Token
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/rest.refreshToken'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: access token
+          schema:
+            type: string
+      summary: access token 재발급
+      tags:
+      - Account
+  /account/valid:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Access Token
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/rest.accessToken'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 유효성 검증 결과
+          schema:
+            type: boolean
+      summary: access token 인증
+      tags:
+      - Account
+  /content:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Content Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.ContentData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Content'
+      summary: Content 생성
+      tags:
+      - Content
+  /content/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Content id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Content'
+      summary: Content 삭제
+      tags:
+      - Content
+    get:
+      consumes:
+      - application/json
+      description: Content 상세 조회
+      parameters:
+      - description: Content id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Content'
+      summary: Content 상세 조회
+      tags:
+      - Content
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Content id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Content Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.ContentData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Content'
+      summary: Content 수정
+      tags:
+      - Content
+  /content/list:
+    get:
+      consumes:
+      - application/json
+      description: Content 목록 조회
+      parameters:
+      - description: Page Number
+        in: query
+        name: page
+        type: integer
+      - description: Page Size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ContentList'
+      summary: Content 목록 조회
+      tags:
+      - Content
+  /rbac/permission:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dblayer.PermissionData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Permission'
+      summary: Permission 생성
+      tags:
+      - RBAC permission
+  /rbac/permission-assignment:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: permission id
+        in: query
+        name: permissionID
+        required: true
+        type: integer
+      - description: role id
+        in: query
+        name: roleID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 삭제된 PermissionAssignment 데이터
+          schema:
+            $ref: '#/definitions/models.PermissionAssignment'
+      summary: PermissionAssignment 삭제
+      tags:
+      - RBAC permissionAssignment
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dblayer.PermissionAssignmentData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PermissionAssignment'
+      summary: PermissionAssignment 생성
+      tags:
+      - RBAC permissionAssignment
+  /rbac/permission/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 삭제된 Permission 데이터
+          schema:
+            $ref: '#/definitions/models.Permission'
+      summary: Permission 삭제
+      tags:
+      - RBAC permission
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update에 사용할 Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dblayer.PermissionData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 수정된 Permission 데이터
+          schema:
+            $ref: '#/definitions/models.Permission'
+      summary: Permission Update
+      tags:
+      - RBAC permission
+  /rbac/permission/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Page Number
+        in: query
+        name: page
+        type: integer
+      - description: Page Size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dblayer.PermissionsPage'
+      summary: Permission 목록 조회
+      tags:
+      - RBAC permission
+  /rbac/permission/objects:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Object를 구하는데 필요한 permission 정보
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/rest.PermissionQuery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 허용된 object list
+          schema:
+            $ref: '#/definitions/dblayer.PermissionAnswer'
+      summary: Permission 에 해당하는 objects 조회
+      tags:
+      - RBAC permission
+  /rbac/permission/set:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dblayer.PermissionSetData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Permission'
+            type: array
+      summary: Permission Set 생성 및 동기화
+      tags:
+      - RBAC permission
+  /rbac/role:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dblayer.RoleData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Role'
+      summary: Role 생성
+      tags:
+      - RBAC role
+  /rbac/role/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 삭제된 Role 데이터
+          schema:
+            $ref: '#/definitions/models.Role'
+      summary: Role 삭제
+      tags:
+      - RBAC role
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update에 사용할 Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dblayer.RoleData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 수정된 Role 데이터
+          schema:
+            $ref: '#/definitions/models.Role'
+      summary: Role Update
+      tags:
+      - RBAC role
+  /rbac/role/{id}/permission:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Page Number
+        in: query
+        name: page
+        type: integer
+      - description: Page Size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dblayer.PermissionsPage'
+      summary: 특정 Role Permission 목록 조회
+      tags:
+      - RBAC role
+  /rbac/role/{id}/subject:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Page Number
+        in: query
+        name: page
+        type: integer
+      - description: Page Size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dblayer.SubjectsStatusPage'
+      summary: 특정 Role Subject 목록 조회
+      tags:
+      - RBAC role
+  /rbac/role/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Page Number
+        in: query
+        name: page
+        type: integer
+      - description: Page Size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dblayer.RolesPage'
+      summary: Role 목록 조회
+      tags:
+      - RBAC role
+  /rbac/subject-assignment:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dblayer.SubjectAssignmentData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 삭제된 SubjectAssignment 데이터
+          schema:
+            $ref: '#/definitions/models.SubjectAssignment'
+      summary: SubjectAssignment 삭제
+      tags:
+      - RBAC subjectAssignment
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dblayer.SubjectAssignmentData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SubjectAssignment'
+      summary: SubjectAssignment 생성
+      tags:
+      - RBAC subjectAssignment
+swagger: "2.0"
